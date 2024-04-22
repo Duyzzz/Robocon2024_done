@@ -42,12 +42,24 @@
 // Cảm biến nhận bóng 
 #define cbb !(1 & digitalRead(47))
 
-
+bool testVar = false;
+int32_t encoder1 = 0;
+int32_t encoder2 = 0;
+int threading = - 1; // 0 to start
 uint32_t  fourBytes; 
+int currentAngle = 0;
+int encoderPulse = 0;
+unsigned long testTestTest;
+bool stopOnce = true;
+int V1 = 100;
+bool one_1 = true;
+bool isAuto = false;
 long numof_rotary = 0; 
 bool find_high_f = true; 
 double  dv = 0.377;
-double distance = 0 ;  
+double distance = 0;
+unsigned long triggerTime = 0;
+int dist_en;  
 
 int angleg = 0; 
 char robot = 'z';

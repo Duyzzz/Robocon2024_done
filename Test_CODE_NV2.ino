@@ -3,7 +3,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <SimpleKalmanFilter.h>
 #include <stdint.h>
-
+#include <PID_DCRv2.h>
 #include"Robot.h" 
 #include"PS3_Index.h"   
 #include "Arm_and_Hand.h"
@@ -11,6 +11,7 @@ LiquidCrystal_I2C lcd(0x27,20,4);
 SimpleKalmanFilter sick1_kal(2, 2, 0.01);
 SimpleKalmanFilter sick2_kal(2, 2, 0.01);
 SimpleKalmanFilter simpleKalmanFilter(2, 2, 0.01);
+PID encoderPID(0.1, 0.01, 0.07);
 
 class motor{
   protected: 
@@ -156,6 +157,11 @@ void setup(){
   Serial3.println('a');
   lcd.init();                     
   lcd.backlight();
+  resetEncoder(true, true);
+  encoderPID.SetOutputLimits(-100, 100);
+  encoderPID.setSampleTime(1);
+  encoderPID.setStart();
+  autoConfiguration();
 }
 int angle_0 = 0; 
 
@@ -167,7 +173,106 @@ void loop(){
   if(button_select){
      Serial3.println('a');
   }
-
+  if(button_triangle){
+    testVar = false;
+    up(0);
+    readEncoder();
+    Serial.println(encoder2);
+  }
+  if(testVar){
+    //move(0, 40, 450 , 50, 10, 10);
+    //secondRiceOne();
+    // xoay 180:  move(-180, 50, 0, 40, 10, 10);
+    //Serial.println(encoder2);
+    // chay ra dat lua 1:   move(-270, 20, 1200, 70, 10, 10); // 6140 xung thi dung
+    // if(micros() - testTestTest > 2500000){
+    //   stop();
+    //   testVar = false;
+    //   readEncoder();
+    //   Serial.println(encoder2);
+    // }else {
+    //   move(-260, 20, 1200, 70, 10, 10);
+    // }
+    runTasks();
+  }
+  if(button_select){
+     Serial3.println('a');
+  }
+  if(button_start && !isAuto){
+    Serial3.println('a');
+    testVar = true;
+    v_bot = 0;
+    encoderPID.setStart();
+    resetEncoder(true, true);
+    //testTestTest = micros();
+    stt_bot = 8;
+    isAuto = true;
+    start();
+  }else if(button_triangle){
+    testVar = false;
+    up(0);
+    readEncoder();
+    Serial.println(encoder2);
+    resetEncoder(true, true);
+    retry();
+  }else if(button_up){ 
+    isAuto = false;
+    soft_start(12,V1); 
+    up_pid(angle_bot,v_bot, 100,100);
+  }else if(button_down){
+    isAuto = false;
+    soft_start(12,V1); 
+    down_pid(angle_bot,v_bot, 100,100);
+  }else if(button_left){
+    isAuto = false;
+    soft_start(12,V1); 
+    left_pid(angle_bot,v_bot, 100,100);
+  }else if(button_right){
+    isAuto = false;
+    soft_start(12,V1); 
+    right_pid(angle_bot,v_bot, 100,100);
+  } else if(button_l1){
+    isAuto = false;
+    soft_start(12,V1);
+    rota_l(v_bot);
+    angle_bot = compass();  
+    stt_bot = 0;
+  }else if(button_r1){
+    isAuto = false;
+    soft_start(12    ,V1);
+    rota_r(v_bot); 
+    angle_bot = compass(); 
+    stt_bot = 0; 
+  }else if(button_r3){
+    // khong lam gi 
+  }else if(!isAuto ){   
+    if(v_bot != 0){  
+      soft_end(1000, 0); 
+      if(stt_bot == 1){
+        up_pid(angle_bot, v_bot, 100, 100);
+        Serial.println("up");
+      }else if(stt_bot == 2){
+        Serial.println("left");
+        left_pid(angle_bot, v_bot, 100, 100);
+      }else if(stt_bot == 3){
+        Serial.println("right");
+        right_pid(angle_bot, v_bot, 100, 100); 
+      }else if(stt_bot == 4){
+        Serial.println("down");
+        down_pid(angle_bot, v_bot, 100, 100); 
+      }else if(stt_bot == 0){
+        Serial.println("stop");
+        v_bot = 0; 
+        up(0);
+      }
+    }else if(stt_bot != 8){
+      angle_bot = compass();
+      one_1 = true; 
+      stop(); 
+    }   
+  }
+  //readEncoder();
+  //Serial.println(encoder2);
   // // dc22.quaythuan(255);  // sau 
   // // dc11.quaynghich(255);  // truoc 
   //  move_kv1(); 
@@ -176,7 +281,7 @@ void loop(){
 
  // dcb1.quaynghich(100); // tren
  // dcb2.quaythuan(100); // duoi
-if(button_up){
+/*if(button_up){
   run_xy(0,1000, 1000);
    //move(0, 40, 3150, 40 , 10,10 ); // angle tt là góc * 10
  }else if(button_right){
@@ -185,8 +290,8 @@ if(button_up){
   move(-90, 40, 1800, 60 , 10,10 );
  }else{
   up(0);
- }
+ }*/
 
-  Serial.println(compass());
+  //Serial.println(compass());
   //rundc1( 30, 1); 
 }

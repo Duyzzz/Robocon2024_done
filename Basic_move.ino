@@ -5,6 +5,8 @@ void soft_start(int ac_start, int speedv){
         v_bot ++; 
         timea = millis(); 
       }
+    }else {
+      v_bot = speedv;
     }
 }
 

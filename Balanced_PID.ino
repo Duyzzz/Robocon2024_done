@@ -70,7 +70,7 @@ void up_pid(int set_angle, int v_bott, int ac_balance , int out_set){
 }
 
 void left_pid(int set_angle, int v_bott, int ac_balance, int out_set){
-  stt_bot = 3; 
+  stt_bot = 2; 
   balance(set_angle, v_bott, ac_balance, out_set);
   dc4.quaynghich(v22); 
   dc2.quaythuan(v11); 
@@ -80,7 +80,7 @@ void left_pid(int set_angle, int v_bott, int ac_balance, int out_set){
 
 
 void right_pid(int set_angle, int v_bott, int ac_balance, int out_set){
-  stt_bot = 2; 
+  stt_bot = 3; 
   balance(set_angle, v_bott, ac_balance, out_set);
   dc4.quaythuan(v11); 
   dc2.quaynghich(v22); 

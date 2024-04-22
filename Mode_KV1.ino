@@ -231,9 +231,7 @@ void goto_0_angle(){
 }
 
 //============================================= Di chuyen ================================================//
-int V1 = 55 ; 
 int a_bt_up = 0; 
-bool one_1 = true; 
 bool bt0 = false; 
 bool stt_0 = true; 
 
