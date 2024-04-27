@@ -2,7 +2,8 @@ String encoderData = "";
 
 void readEncoder(){
   Serial2.print('d');
-  Serial.print("reading encoder");
+  //Serial.println("reading encoder");
+  delayMicroseconds(1000);
   if(Serial2.available()){
     encoderData = Serial2.readStringUntil('}');
     if(encoderData[0] == '{'){
@@ -24,52 +25,20 @@ void readEncoder(){
 void resetEncoder(bool Encoder1_, bool Encoder2_){
   if(Encoder1_){
     Serial2.print('a');
-    Serial.println("encoder 1 rested");
+    Serial.println("encoder 1 reseted");
   } 
   if(Encoder2_){
-    Serial.println("encoder 2 rested");
+    Serial.println("encoder 2 reseted");
     Serial2.print('b');
   }
 }
-void goEncoder(int requireValue){
-  //Serial.println("chec check");
-  if(encoderPID.checkTime()){
-    readEncoder();
-    encoderPID.getInput(abs(encoder2));
-    if(encoderPID.error() < 300 && encoderPID.error() > 300){
-      encoderPID.SetTunings(0.16, 0.05, 0.002);
-      encoderPID.SetOutputLimits(-40, 40);
-    }else {
-      encoderPID.SetTunings(0.1, 0.05, 0.004);
-      encoderPID.SetOutputLimits(-90, 90);
 
-    }
-    encoderPID.Compute();
-    encoderPID.resetTimeSample();
-  }
-  Serial.print(encoderPID.setPointOut());
-  Serial.print(" ");
-  Serial.print(encoderPID.inputOut());
-  Serial.print(" ");
-  Serial.println(encoderPID.out());
-  if(encoderPID.out() > 2){
-    soft_start(12, encoderPID.out());
-    up_pid(0, v_bot, 100, 100);
-    Serial.println("up");
-  }else if(encoderPID.out() < -2){
-    soft_start(12, -encoderPID.out());
-    down_pid(0, v_bot, 100, 100);
-    Serial.println("down");
-  }else {
-    stop();
-  }
-}
 bool goEncoder(int requireDirection, int requireValue){
   //Serial.println("chec check");
   if(encoderPID.checkTime()){
     readEncoder();
     //Serial.println(encoder2);
-    encoderPID.getInput(abs(encoder2));
+    encoderPID.getInput(encoder2);
     Serial.print(encoderPID.setPointOut());
     Serial.print(" ");
     Serial.print(encoderPID.inputOut());
@@ -124,3 +93,4 @@ bool goEncoder(int requireDirection, int requireValue){
   }
   return false;
 }
+

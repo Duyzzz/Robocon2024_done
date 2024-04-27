@@ -2,6 +2,8 @@
 #define m2 4
 #define m3 5 
 #define m4 6
+#define m5 7
+#define m6 8
 
 #define d1 52
 #define d2 53
@@ -24,6 +26,8 @@
 #define pwm8 10
 #define pwm9 44
 #define pwm10 2
+#define pwm13 11
+
 // Laxer blynk
 #define lazer 42
 
@@ -32,8 +36,8 @@
 #define m11 24
 #define m12 26
 
-#define m21 28
-#define m22 30
+#define m21 36
+#define m22 38
 
 #define pwm_m3 13
 #define pwm_m2 12
@@ -46,12 +50,15 @@ bool testVar = false;
 int32_t encoder1 = 0;
 int32_t encoder2 = 0;
 int threading = - 1; // 0 to start
+bool configuration = true;
+bool enableConfigPosition = true;
+uint8_t progress = 0;
 uint32_t  fourBytes; 
 int currentAngle = 0;
 int encoderPulse = 0;
 unsigned long testTestTest;
 bool stopOnce = true;
-int V1 = 100;
+int V1 = 80;
 bool one_1 = true;
 bool isAuto = false;
 long numof_rotary = 0; 
@@ -60,6 +67,18 @@ double  dv = 0.377;
 double distance = 0;
 unsigned long triggerTime = 0;
 int dist_en;  
+
+
+
+bool toggle = true;
+bool _13Trai = false;
+bool _24Trai = false;
+bool _13Phai = false;
+bool _24Phai = false;
+bool cangTrai = false;
+bool cangPhai = false;
+bool banTren = false;
+bool banDuoi = false;
 
 int angleg = 0; 
 char robot = 'z';
@@ -107,7 +126,18 @@ bool soft_state = true;
 int solan_sick2 = 0;  
 int solan_sick22 = 0;  
 double one_dist = 10000/1024; 
-
+//========================== runx y==============================//
+signed long curX = 0;
+signed long curY = 0;
+float initialDistance = 0;
+unsigned long timeSoft = 0;
+int speed = 0;
+signed long testToGetX;
+signed long testToGetY;
+int firstSpeedForPosition;
+int expectedSpeedForPosition;
+unsigned char ricePosition = 0;
+bool enableGoFarm = true;
 // ========================  Các hàm  ========================  //
 void balance(int set_angle, int v, int ac);
 void rota_r(int v);

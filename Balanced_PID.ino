@@ -54,38 +54,38 @@ void balance(int set_angle, int v, int ac, int out){
 void down_pid(int set_angle, int v_bott, int ac_balance, int out_set){
   stt_bot = 4; 
   balance(set_angle, v_bott, ac_balance, out_set);
-  dc4.quaynghich(v22); 
-  dc2.quaythuan(v11); 
-  dc1.quaynghich(v22); 
-  dc3.quaythuan(v11);
+  dc4.quaythuan(v22); 
+  dc2.quaynghich(v11); 
+  dc1.quaynghich(v11); 
+  dc3.quaythuan(v22);
 }
 
 void up_pid(int set_angle, int v_bott, int ac_balance , int out_set){
   stt_bot = 1; 
   balance(set_angle, v_bott, ac_balance, out_set);
-  dc4.quaythuan(v11); 
-  dc2.quaynghich(v22); 
-  dc1.quaythuan(v11); 
-  dc3.quaynghich(v22);
+  dc4.quaynghich(v11); 
+  dc2.quaythuan(v22); 
+  dc1.quaythuan(v22); 
+  dc3.quaynghich(v11);
 }
 
 void left_pid(int set_angle, int v_bott, int ac_balance, int out_set){
   stt_bot = 2; 
   balance(set_angle, v_bott, ac_balance, out_set);
-  dc4.quaynghich(v22); 
-  dc2.quaythuan(v11); 
-  dc1.quaythuan(v11); 
-  dc3.quaynghich(v22);
+  dc4.quaynghich(v11); 
+  dc2.quaythuan(v22); 
+  dc1.quaynghich(v11); 
+  dc3.quaythuan(v22);
 }
 
 
 void right_pid(int set_angle, int v_bott, int ac_balance, int out_set){
   stt_bot = 3; 
   balance(set_angle, v_bott, ac_balance, out_set);
-  dc4.quaythuan(v11); 
-  dc2.quaynghich(v22); 
-  dc1.quaynghich(v22); 
-  dc3.quaythuan(v11);
+  dc4.quaythuan(v22); 
+  dc2.quaynghich(v11); 
+  dc1.quaythuan(v22); 
+  dc3.quaynghich(v11);
 }
 
 

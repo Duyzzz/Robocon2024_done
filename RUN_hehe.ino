@@ -1,8 +1,8 @@
 double PI_const = 3.141592654; 
 void move(int angle_rotare, int v_rotare, int angle_tt, int v_tt , int soft_start , int soft_stopp  ){   // angle tt là góc * 10
   int angle_compass = compass(); 
-  currentAngle = angle_compass;
-  int real_v_rotare = pid_cal(angle_rotare,angle_compass/10, v_rotare, 1.2, 0.3, 0.05); 
+  //nowAngle = angle_compass();
+  int real_v_rotare = pid_cal(angle_rotare,angle_compass/10, v_rotare, 1.3, 0.3, 0.08); 
   int pwm1, pwm2, pwm3, pwm4;
   int vec1, vec2, vec3, vec4; 
   pwm1 = real_v_rotare + v_tt*cos((angle_tt - angle_compass - 450)*(PI_const/1800)); 
@@ -36,7 +36,7 @@ int pid_cal(int set_point, int input,int constrain_p,  double pP, double pI, dou
   error_p = set_point - input; 
     output = pP*error_p + pI*(error_p +  last_error_p) + pD*(error_p - last_error_p); 
   last_error_p = error_p; 
-  output = constrain(output, - constrain_p, constrain_p); 
+  output = -constrain(output, - constrain_p, constrain_p); 
   return output; 
 }
 

@@ -8,8 +8,9 @@
 #include"PS3_Index.h"   
 #include "Arm_and_Hand.h"
 LiquidCrystal_I2C lcd(0x27,20,4); 
-SimpleKalmanFilter sick1_kal(2, 2, 0.01);
-SimpleKalmanFilter sick2_kal(2, 2, 0.01);
+SimpleKalmanFilter headSickKal(2, 2, 0.01);
+SimpleKalmanFilter rightSickKal(2, 2, 0.01);
+SimpleKalmanFilter leftSickKal(2, 2, 0.01);
 SimpleKalmanFilter simpleKalmanFilter(2, 2, 0.01);
 PID encoderPID(0.1, 0.01, 0.07);
 
@@ -80,8 +81,8 @@ motor dc2(m2, d2);
 motor dc3(m3, d3); 
 motor dc4(m4, d4);
 
-motor dcb1(8, d6); 
-motor dcb2(9, d7); 
+motor dcb1(m5, d5); 
+motor dcb2(m6, d6); 
 
 basic_motor dc11( m11, m12, pwm_m1);
 basic_motor dc22( m21, m22, pwm_m2);
@@ -106,21 +107,26 @@ void setup(){
 
   pinMode(m4, OUTPUT);
   pinMode(d4, OUTPUT);
-  //Basic motor setup 
-  pinMode(m11, OUTPUT);
-  pinMode(m12, OUTPUT);
-  pinMode(pwm_m1, OUTPUT);
 
-  pinMode(m21, OUTPUT);
-  pinMode(m22, OUTPUT);
-  pinMode(pwm_m2, OUTPUT);
+  pinMode(m5, OUTPUT);
+  pinMode(d5, OUTPUT);
+  pinMode(m6, OUTPUT);
+  pinMode(d6, OUTPUT);
+  //Basic motor setup 
+  // pinMode(m11, OUTPUT);
+  // pinMode(m12, OUTPUT);
+  // pinMode(pwm_m1, OUTPUT);
+
+  // pinMode(m21, OUTPUT);
+  // pinMode(m22, OUTPUT);
+  // pinMode(pwm_m2, OUTPUT);
   // Air_press setup
-  pinMode(k1, OUTPUT); 
-  pinMode(k2, OUTPUT); 
-  pinMode(k3, OUTPUT); 
-  pinMode(k4, OUTPUT); 
-  pinMode(k5, OUTPUT); 
-  pinMode(k6, OUTPUT); 
+  // pinMode(k1, OUTPUT); 
+  // pinMode(k2, OUTPUT); 
+  // pinMode(k3, OUTPUT); 
+  // pinMode(k4, OUTPUT); 
+  // pinMode(k5, OUTPUT); 
+  // pinMode(k6, OUTPUT); 
   // Encoder setup
   pinMode(enb, INPUT); 
   pinMode(ena, INPUT); 
@@ -133,9 +139,6 @@ void setup(){
   pinMode(ct3, INPUT); 
   pinMode(ct4, INPUT); 
  
-  // lAZER 
-  pinMode(lazer, OUTPUT); 
-
 
   Serial3.begin(115200);   // For EPS 32
   Serial2.begin(115200);   // Compass
@@ -147,11 +150,7 @@ void setup(){
   dc3.quaythuan(0);
   dc4.quaythuan(0);
 
-  dcb1.quaythuan(0);
-  dcb2.quaythuan(0);
 
-  arm_l.stop(); 
-  arm_r.stop(); 
   
 
   Serial3.println('a');
@@ -161,12 +160,72 @@ void setup(){
   encoderPID.SetOutputLimits(-100, 100);
   encoderPID.setSampleTime(1);
   encoderPID.setStart();
-  autoConfiguration();
+  headSickKal.updateEstimate(analogRead(A7));
+  rightSickKal.updateEstimate(analogRead(A6));
+  pinMode(m51, OUTPUT);
+  pinMode(m52, OUTPUT);
+  pinMode(m21, OUTPUT);
+  pinMode(m22, OUTPUT);
+  pinMode(pwm10, OUTPUT);
+  pinMode(pwm13, OUTPUT);
+  digitalWrite(m52, 0); // 13 trai
+  digitalWrite(m51, 0);  // nang ha trai
+  digitalWrite(m22, 0); // 24 trai
+
+  digitalWrite(pwm10, 0); // 24 phai
+  digitalWrite(pwm13, 0); // 13 phai
+  digitalWrite(m21, 0); // nang ha phai
+  dcb1.quaythuan(0); // dc duoi
+
+  dcb2.quaynghich(0); // dc tren
 }
 int angle_0 = 0; 
 
 void loop(){
+  // readEncoder();
+  // Serial.println(encoder2);
   ps3(); 
+  if(button_square){
+    if(toggle){
+      toggle = false;
+      cangTrai = !cangTrai;
+      digitalWrite(m51, cangTrai);
+    }
+  }else if(button_circle){
+    if(toggle){
+      toggle = false;
+      cangPhai = !cangPhai;
+      digitalWrite(m21, cangPhai);
+    }
+  }else if(lu){
+    if(toggle){
+      toggle = false;
+      _13Trai = !_13Trai;
+      digitalWrite(m52, _13Trai);
+    }
+  }else if(ld){
+    if(toggle){
+      toggle = false;
+      _24Trai = !_24Trai;
+      digitalWrite(pwm10, _24Trai);
+    }
+  }else if(ll){
+    if(toggle){
+      toggle = false;
+      _13Phai = !_13Phai;
+      digitalWrite(pwm13, _13Phai);
+    }
+  }else if(lr){
+    if(toggle){
+      toggle = false;
+      _24Phai = !_24Phai;
+      digitalWrite(m22, _24Phai);
+    }
+  }else {
+    toggle = true;
+  }
+  headSickKal.updateEstimate(analogRead(A7));
+  rightSickKal.updateEstimate(analogRead(A6));
   // //display(); 
   // left_grip(); 
   // right_grip(); 
@@ -175,12 +234,12 @@ void loop(){
   }
   if(button_triangle){
     testVar = false;
+    enableGoFarm = true;
     up(0);
-    readEncoder();
-    Serial.println(encoder2);
   }
   if(testVar){
-    //move(0, 40, 450 , 50, 10, 10);
+    //run(500, 500, 0, "right");
+    //move(0, 40, 450, 50, 10, 10);
     //secondRiceOne();
     // xoay 180:  move(-180, 50, 0, 40, 10, 10);
     //Serial.println(encoder2);
@@ -194,10 +253,40 @@ void loop(){
     //   move(-260, 20, 1200, 70, 10, 10);
     // }
     runTasks();
+    //Serial.print("tasking: ");
+    //run(1000, 1000, 0, "right");
+    
+    /*if(ricePosition == 1){
+      run(2630, 1502, 0, "right"); // lua 1
+    }else if(ricePosition == 2){
+      run(2178, 1296, 0, "right"); // lua 1
+    }else if(ricePosition == 3){
+      run(1085, 1293, 0, "right");
+       // lua 1
+    }else if(ricePosition == 4){
+      run(1549, 1836, 0, "right"); // lua 1
+    }else if(ricePosition == 5){
+      // go get rice
+      //run(2459, 593);
+      ricePosition = 1;
+    }*/
+    //move(-270, 40, 0, 50, 0, 0);
   }
-  if(button_select){
-     Serial3.println('a');
-  }
+    // testToGetX = readRightSick();
+    // testToGetY = readHeadSick();
+    // Serial.print(testToGetX);
+    // Serial.print(" ");
+    // Serial.println(testToGetY);
+  // float testDistance = sqrt(abs(testToGetX*testToGetX) + abs(testToGetY*testToGetY));
+  // Serial.println(testDistance);
+  //Serial.println(readHeadSick());
+  /*if(button_x && enableGoFarm){
+    testVar = true;
+    isAuto = true;
+    enableConfigPosition = true;
+    ricePosition++;
+    enableGoFarm = false;
+  }*/
   if(button_start && !isAuto){
     Serial3.println('a');
     testVar = true;
@@ -247,7 +336,7 @@ void loop(){
     // khong lam gi 
   }else if(!isAuto ){   
     if(v_bot != 0){  
-      soft_end(1000, 0); 
+      soft_end(900, 0); 
       if(stt_bot == 1){
         up_pid(angle_bot, v_bot, 100, 100);
         Serial.println("up");
@@ -279,8 +368,6 @@ void loop(){
   // kv2(); 
   //dc2.quaythuan(8);
 
- // dcb1.quaynghich(100); // tren
- // dcb2.quaythuan(100); // duoi
 /*if(button_up){
   run_xy(0,1000, 1000);
    //move(0, 40, 3150, 40 , 10,10 ); // angle tt là góc * 10
@@ -294,4 +381,5 @@ void loop(){
 
   //Serial.println(compass());
   //rundc1( 30, 1); 
+  
 }
