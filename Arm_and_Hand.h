@@ -35,11 +35,14 @@ class arm_hand{
     bool act; // quyết định trạng thái action là 0 hay là 1 ( đảo đấy )
   public: 
     arm_hand(int pinn, bool actt):pin(pinn),act(actt){}
+    void config(int type){
+      pinMode(pin, type);
+    }
     void action(){
-      digitalWrite(pin,1); 
+      digitalWrite(pin,act); 
     }
     void stop (){
-      digitalWrite(pin, 0); 
+      digitalWrite(pin, !act); 
     }
 }; 
 

@@ -18,27 +18,24 @@
 #define enb 22
 
 #define m51 24 
-#define m52 26 
+#define m52 26
 
-#define pwm5 7
-#define pwm6 8
-#define pwm7 9
-#define pwm8 10
-#define pwm9 44
-#define pwm10 2
-#define pwm13 11
+
 
 // Laxer blynk
 #define lazer 42
 
 
 // Động cơ thường 
-#define m11 24
-#define m12 26
 
-#define m21 36
+#define m51 24 
+#define m52 26 
+#define m41 28 
+#define m42 30
+#define m31 32 
+#define m32 34
+#define m21 36 
 #define m22 38
-
 #define pwm_m3 13
 #define pwm_m2 12
 #define pwm_m1 11
@@ -47,7 +44,7 @@
 #define cbb !(1 & digitalRead(47))
 
 bool testVar = false;
-int32_t encoder1 = 0;
+
 int32_t encoder2 = 0;
 int threading = - 1; // 0 to start
 bool configuration = true;
@@ -83,11 +80,15 @@ bool banDuoi = false;
 int angleg = 0; 
 char robot = 'z';
 int angle = 0; 
-
+bool endWait = false;
+char inRice = 'r';
 // Thông số chung robot 
 int v_bot = 0; 
 int angle_bot = 0; 
 uint8_t stt_bot = 0; // 1up, 2 left, 3 right, 4 down. 
+unsigned long timeAutoRice = 0;
+bool enableTimeEnd = true;
+bool started = false;
 
 // PS3
 String command= ""; 
@@ -138,6 +139,14 @@ int firstSpeedForPosition;
 int expectedSpeedForPosition;
 unsigned char ricePosition = 0;
 bool enableGoFarm = true;
+
+// =========================== chọn sân ======================== //
+enum Land {
+  RED,
+  BLUE
+};
+Land land = RED;
+
 // ========================  Các hàm  ========================  //
 void balance(int set_angle, int v, int ac);
 void rota_r(int v);
@@ -147,7 +156,6 @@ void right(int va);
 void left(int va);
 void up(int va);
 void down(int va);
-int soft_start(int speedv);
 int compass();
 int eror_line();
 void rotare( int set_angle);
