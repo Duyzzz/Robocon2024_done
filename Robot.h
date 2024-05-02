@@ -39,12 +39,15 @@
 #define pwm_m3 13
 #define pwm_m2 12
 #define pwm_m1 11
+#define mt 28
+#define mn 30
+#define ruloTren 32
 
 // Cảm biến nhận bóng 
 #define cbb !(1 & digitalRead(47))
 
 bool testVar = false;
-
+short runStart = -1;
 int32_t encoder2 = 0;
 int threading = - 1; // 0 to start
 bool configuration = true;
@@ -76,6 +79,8 @@ bool cangTrai = false;
 bool cangPhai = false;
 bool banTren = false;
 bool banDuoi = false;
+bool insideLeftToggle = false;
+bool insideRightToggle = false;
 
 int angleg = 0; 
 char robot = 'z';

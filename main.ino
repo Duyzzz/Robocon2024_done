@@ -85,17 +85,43 @@ class basic_motor{
     }
     
 };
+// 40 van 10
+// 44 van 11
+// 42 van 9
+// 38 van 5
+// 36 van 6
+// 2 van 7
+// 34 van 8
+// 12 van 4
+// 26 van 1
+// 24 van 2
+// 11 van 3
+
+// 32 m1
+// 30 mn
+// 28 mt
 
 
-OutputControl dcHutTren(11, 1);
-OutputControl dcHutDuoi(24, 1);
 
-arm_hand arm_l (32,0); 
-arm_hand arm_r (26,0); 
-arm_hand hand_l_13 (13,1); 
-arm_hand hand_l_24 (12,1); 
-arm_hand hand_r_13 (28,1); 
-arm_hand hand_r_24 (34,1); 
+// 40 inside r
+// 44 push out to get 13 (2 xilanh dong thoi)
+// 42 inside left
+// 38 nang phai
+// 36 right 13
+// 2 right 24
+// 34 left 13
+// 12 left 24
+// 11 nang trai
+arm_hand arm_l (11,1); 
+arm_hand arm_r (38,1); 
+arm_hand hand_l_13 (34,0); 
+arm_hand hand_l_24 (12,0); 
+arm_hand hand_r_13 (36,0); 
+arm_hand hand_r_24 (2,0); 
+arm_hand insideLeft (42,1); 
+arm_hand insideRight (40,1); 
+arm_hand pushOut (44,1); 
+
 
 
 
@@ -107,19 +133,21 @@ motor dc4(m4, d4);
 motor dcbTren(m5, d5);
 motor dcbDuoi(m6, d6);
 
-void countEncoder(){
-  encoder2++;
-}
+
 void setup(){
   // set 
+  ballFiringConfig();
   arm_l.config(OUTPUT);
   arm_r.config(OUTPUT);
   hand_l_13.config(OUTPUT);
   hand_l_24.config(OUTPUT);
   hand_r_13.config(OUTPUT);
   hand_r_24.config(OUTPUT);
-  dcHutTren.config(OUTPUT);
-  dcHutDuoi.config(OUTPUT);
+  insideLeft.config(OUTPUT);
+  insideRight.config(OUTPUT);
+  pushOut.config(OUTPUT);
+  pinMode(32, OUTPUT);
+  digitalWrite(32, 0);
   pinMode(47, INPUT); 
   // Set basic motor 
   //Set controller pin for PID driver 
@@ -128,6 +156,7 @@ void setup(){
   dc2.config();
   dc3.config();
   dc4.config();
+  
   dcbTren.config();
   dcbDuoi.config();
   
@@ -159,8 +188,9 @@ void setup(){
   
 
   Serial3.println('a');
-  headSickKal.updateEstimate(analogRead(A7));
-  rightSickKal.updateEstimate(analogRead(A6));
+  readHeadSick();
+  readRightSick();
+  readLeftSick();
  
   // dcb1.quaythuan(0); // dc duoi
 
@@ -168,36 +198,61 @@ void setup(){
   encoder2 = 0;
   if(true){
     land = RED;
+    Serial.println("REDDDD");
   }else {
+    Serial.println("BLUEEEE");
     land = BLUE;
   }
-  Serial.println("hello");
   // arm_l.action();
   // arm_r.action();
   // hand_l_13.action();
   // hand_l_24.action();
   // hand_r_13.action();
   // hand_r_24.action();
-  dcHutTren.stop();
-  dcHutDuoi.stop();
   dcbTren.quaynghich(0);
   dcbDuoi.quaythuan(0);
   pinMode(21, INPUT_PULLUP);
-  arm_l.action();
-  arm_r.action();
-  hand_l_13.stop();
-  hand_r_13.stop();
-  hand_l_24.stop();
-  hand_r_24.stop();
-  attachInterrupt(digitalPinToInterrupt(21), countEncoder, FALLING);
+  pushOut.stop();
+  insideLeft.stop();
+  insideRight.stop();
+  hand_l_13.action();
+  hand_l_24.action();
+  hand_r_13.action();
+  hand_r_24.action();
+  arm_l.stop();
+  arm_r.stop();
+  //takeBall();
+  //attachInterrupt(digitalPinToInterrupt(21), countEncoder, FALLING);
 }
 int angle_0 = 0; 
 
 void loop(){
+    //Serial.println(" halk");
+    //Serial.println(compass());
   ps3(); 
-  
   if(true){
-    if(button_circle){
+    if(lu){
+      if(toggle){
+        toggle = false;
+        insideLeftToggle = !insideLeftToggle;
+        if(insideLeftToggle){
+          insideLeft.action();
+        }else {
+          insideLeft.stop();
+        }
+      }
+    }else if(ld){
+      if(toggle){
+        toggle = false;
+        insideRightToggle = !insideRightToggle;
+        if(insideRightToggle){
+          insideRight.action();
+        }else {
+          insideRight.stop();
+        }
+      }
+    }
+    else if(button_circle){
       if(toggle){
         toggle = false;
         cangPhai = !cangPhai;
@@ -261,9 +316,27 @@ void loop(){
       toggle = true;
     }
   }
-  
-  headSickKal.updateEstimate(analogRead(A11));
-  rightSickKal.updateEstimate(analogRead(A9));
+  if(button_x){
+    Serial3.println('a');
+    delay(1);
+  }
+  // if(button_circle){
+  //   up(0);
+  // }else if(button_square){
+  //   Serial3.println('a');
+  //   testVar = true;
+  //   v_bot = 0;
+  //   //testTestTest = micros();
+  //   stt_bot = 8;
+  //   isAuto = true;
+  //   testVar = true;
+  // }
+   readHeadSick();
+   readRightSick();
+   readLeftSick();
+  Serial.print(readLeftSick());
+  Serial.print(" ");
+  Serial.println(readHeadSick());
   // //display(); 
   // left_grip(); 
   // right_grip(); 
@@ -272,6 +345,7 @@ void loop(){
     started = false;
     testVar = false;
     enableGoFarm = true;
+    isAuto = false;
     configuration = true;
     stopOnce = true;
     up(0);
@@ -279,7 +353,8 @@ void loop(){
 
 
   if(testVar){
-    Serial.println(encoder2);
+    //run(4095, 1558, 0, 0, "left");
+    //move(90, 50, 900, 20, 0, 0); 
     // xoay 180:  move(-180, 50, 0, 40, 10, 10);
     //Serial.println(encoder2);
     // chay ra dat lua 1:   move(-270, 20, 1200, 70, 10, 10); // 6140 xung thi dung
@@ -292,8 +367,12 @@ void loop(){
     //   move(-260, 20, 1200, 70, 10, 10);
     // }
     runTasks();
+      //move(90, 40, 900, 40, 0, 0); 
+    //move(0, 45, 1350, 30,0,0);
+    //run(4084, 1555, 900, 0, "left");
     //Serial.print("tasking: ");
-    //run(1000, 1000, 0, "right");
+    //run(2000, 2000, 0, 0, "left");
+
     
     /*if(ricePosition == 1){
       run(2630, 1502, 0, "right"); // lua 1
@@ -311,11 +390,11 @@ void loop(){
     }*/
     //move(-270, 40, 0, 50, 0, 0);
   }
-    testToGetX = readRightSick();
-    testToGetY = readHeadSick();
-    Serial2.print(testToGetX);
-    Serial2.print(" ");
-    Serial2.println(testToGetY);
+    // testToGetX = readRightSick();
+    // testToGetY = readHeadSick();
+    // Serial2.print(testToGetX);
+    // Serial2.print(" ");
+    // Serial2.println(testToGetY);
   // float testDistance = sqrt(abs(testToGetX*testToGetX) + abs(testToGetY*testToGetY));
   // Serial.println(testDistance);
   //Serial.println(readHeadSick());
@@ -326,7 +405,13 @@ void loop(){
     ricePosition++;
     enableGoFarm = false;
   }*/
+  // Serial.print("isAuto: ");
+  // Serial.print(isAuto);
+  // Serial.print("started: ");
+  // Serial.println(started);
+  
   if(button_start && !isAuto && !started){
+    Serial.println("start");
     started = true;
     Serial3.println('a');
     testVar = true;
@@ -335,12 +420,8 @@ void loop(){
     stt_bot = 8;
     isAuto = true;
     start();
-  }else if(button_triangle){
-    testVar = false;
-    up(0);
-    Serial.println(encoder2);
-    encoder2 = 0;
-    retry();
+  }else if(button_start){
+    isAuto = true;
   }else if(button_up){ 
     isAuto = false;
     soft_start(12,V1); 
@@ -399,5 +480,4 @@ void loop(){
   }else {
     angle_bot = compass();
   }
-  
 }

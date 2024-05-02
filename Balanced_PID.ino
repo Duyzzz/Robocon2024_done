@@ -8,15 +8,15 @@ void balance(int set_angle, int v, int ac, int out){
     error = set_angle - angle;
     if(stt_bot == 1){
       if(error > -80 && error < 80){
-        kp1 = 0.0006, kd1 = 0.005, ki1 = 0.086; 
+        kp1 = 0.006, kd1 = 0.005, ki1 = 0.086; 
       }else{
-        kp1 = 0.001, kd1 = 0.005, ki1 = 0.08; 
+        kp1 = 0.01, kd1 = 0.005, ki1 = 0.08; 
       }
     }else if(stt_bot == 2 || stt_bot == 3){
       if(error > -40 && error < 40){
-        kp1 = 0.08, kd1 = 0.008, ki1 = 0.012; 
+        kp1 = 0.12, kd1 = 0.08, ki1 = 0.012; 
       }else{
-        kp1 = 0.05, kd1 = 0.005, ki1 = 0.008; 
+        kp1 = 0.1, kd1 = 0.002, ki1 = 0.008; 
       }
     }else if(stt_bot == 4){
       if(error > -40 && error < 40){

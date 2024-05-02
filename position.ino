@@ -48,7 +48,7 @@ float getFirstSpeed(float initialDistanceSet){
   }
 }
 
-// void run(int needX, int needY, int firstSpeed, int expectedSpeed, String request = "right"){
+// void run(int needX, int needY, int firstSpeed, int expectedSpeed, String request){
 //   signed long x;
 //   signed long y;
 //   if(request == "right"){
@@ -75,6 +75,225 @@ float getFirstSpeed(float initialDistanceSet){
 //     speed = expectedSpeed;
 //   }
 //     speed = constrain(speed, 0, expectedSpeed);
+//   int tempSpeed = speed;
+//   Serial.println(tempSpeed);
+//   if(y != 0){
+//     float oket = (float)abs(x)/(float)abs(y);
+//     float alpha = (float)atan(oket)*1800/PI;
+//     //Serial.println(alpha);
+//     if(x < 10 && x > -10 && y > -10 && y < 10){
+//       stop();
+//       Serial.print("check 0 ");
+//       enableGoFarm = true;
+//     }else if(x > 0 && y > 0){
+//        Serial.print("check 1 ");
+//       move(0, 50, -alpha, tempSpeed, 0, 0);
+//     }else if(x < 0 && y > 0){
+//        Serial.print("check 2 ");
+//       move(0, 50, alpha, tempSpeed, 0, 0);
+//     }else if(x > 0 && y < 0){
+//        Serial.print("check 3 ");
+//       move(0, 50, alpha - 1800, tempSpeed, 0, 0);
+//     } else if(x < 0 && y < 0){
+//       Serial.print("check 4 ");
+//       move(0, 50, 1800 - alpha, tempSpeed, 0, 0);
+//     } else if(x == 0 && y > 0){
+//        Serial.print("check 5 ");
+//       move(0, 50, 0, tempSpeed, 0, 0);
+//     } else if(x == 0 && y < 0){
+//        Serial.print("check 6 ");
+//       move(0, 50, 1800, tempSpeed, 0, 0);
+//     }
+//   }else {
+//     if(x > 0){
+//       Serial.print("check 7 ");
+//        move(0, 50, -900, tempSpeed, 0, 0);
+//     }else if(x < 0){
+//       Serial.print("check 8 ");
+//       move(0, 50, 900, tempSpeed, 0, 0);
+//     }else {
+//       Serial.print("check 9 ");
+//       stop();
+//     }
+//   }
+// }
+
+
+void run(int needX, int needY, int direction, int change, String request){
+  signed long x;
+  signed long y;
+  if(request == "right"){
+    x = readRightSick() - needX;
+    y = readHeadSick() - needY;
+    float nowDistance = sqrt(abs(x*x) + abs(y*y));
+  Serial.println(nowDistance);
+  if(enableConfigPosition){
+    firstSpeedForPosition = getFirstSpeed(nowDistance);
+    expectedSpeedForPosition = getMaxSpeed(nowDistance);
+    // Serial.print(firstSpeedForPosition);
+    // Serial.print(" ");
+    // Serial.println(expectedSpeedForPosition);
+    initialDistance = nowDistance;
+    timeSoft = 0;
+    enableConfigPosition = false;
+  }
+  /*Serial.print(firstSpeedForPosition);
+  Serial.print(" ");
+  Serial.print(expectedSpeedForPosition);
+  Serial.print(" ");*/
+  if(nowDistance >= initialDistance*8/10){
+    speed = map(abs(initialDistance - nowDistance), 0, initialDistance*2/10, firstSpeedForPosition, expectedSpeedForPosition);
+  }else if(nowDistance < initialDistance*1/3){
+    speed = expectedSpeedForPosition + 5 - map(abs(initialDistance*1/3 - nowDistance), 0, initialDistance*1/3, 19, expectedSpeedForPosition);
+  }else if(nowDistance >= initialDistance*1/3 && nowDistance < initialDistance*8/10){
+    speed = expectedSpeedForPosition;
+  }
+    speed = constrain(speed, 0, expectedSpeedForPosition);
+  int tempSpeed = speed;
+  //Serial.println(tempSpeed);
+  if(y != 0){
+    float oket = (float)abs(x)/(float)abs(y);
+    float alpha = (float)atan(oket)*1800/PI;
+    //Serial.println(alpha);
+    if(x < 10 && x > -10 && y > -10 && y < 10){
+      stop();
+      Serial.print("check 0 ");
+      enableGoFarm = true;
+    }else if(x > 0 && y > 0){
+       Serial.print("check 1 ");
+      move(0, 50, -alpha, tempSpeed, 0, 0);
+    }else if(x < 0 && y > 0){
+       Serial.print("check 2 ");
+      move(0, 50, alpha, tempSpeed, 0, 0);
+    }else if(x > 0 && y < 0){
+       Serial.print("check 3 ");
+      move(0, 50, alpha - 1800, tempSpeed, 0, 0);
+    } else if(x < 0 && y < 0){
+      Serial.print("check 4 ");
+      move(0, 50, 1800 - alpha, tempSpeed, 0, 0);
+    } else if(x == 0 && y > 0){
+       Serial.print("check 5 ");
+      move(0, 50, 0, tempSpeed, 0, 0);
+    } else if(x == 0 && y < 0){
+       Serial.print("check 6 ");
+      move(0, 50, 1800, tempSpeed, 0, 0);
+    }
+  }else {
+    if(x > 0){
+      Serial.print("check 7 ");
+       move(0, 50, -900, tempSpeed, 0, 0);
+    }else if(x < 0){
+      Serial.print("check 8 ");
+      move(0, 50, 900, tempSpeed, 0, 0);
+    }else {
+      Serial.print("check 9 ");
+      stop();
+    }
+  }
+  }else if(request == "left"){
+    x = readLeftSick() - needX;
+    y = readHeadSick() - needY;
+    float nowDistance = sqrt(abs(x*x) + abs(y*y));
+  Serial.println(nowDistance);
+  if(enableConfigPosition){
+    firstSpeedForPosition = getFirstSpeed(nowDistance);
+    expectedSpeedForPosition = getMaxSpeed(nowDistance);
+    // Serial.print(firstSpeedForPosition);
+    // Serial.print(" ");
+    // Serial.println(expectedSpeedForPosition);
+    initialDistance = nowDistance;
+    timeSoft = 0;
+    enableConfigPosition = false;
+  }
+  /*Serial.print(firstSpeedForPosition);
+  Serial.print(" ");
+  Serial.print(expectedSpeedForPosition);
+  Serial.print(" ");*/
+  if(nowDistance >= initialDistance*8/10){
+    speed = map(abs(initialDistance - nowDistance), 0, initialDistance*2/10, firstSpeedForPosition, expectedSpeedForPosition);
+  }else if(nowDistance < initialDistance*1/3){
+    speed = expectedSpeedForPosition + 5 - map(abs(initialDistance*1/3 - nowDistance), 0, initialDistance*1/3, 19, expectedSpeedForPosition);
+  }else if(nowDistance >= initialDistance*1/3 && nowDistance < initialDistance*8/10){
+    speed = expectedSpeedForPosition;
+  }
+    speed = constrain(speed, 0, expectedSpeedForPosition);
+  int tempSpeed = speed;
+  //Serial.println(tempSpeed);
+  if(y != 0){
+    float oket = (float)abs(x)/(float)abs(y);
+    float alpha = (float)atan(oket)*1800/PI;
+    //Serial.println(alpha);
+    if(x < 10 && x > -10 && y > -10 && y < 10){
+      stop();
+      Serial.print("check 0 ");
+    }else if(x > 0 && y > 0){
+       Serial.print("check 1 ");
+      move(0, 50, alpha, tempSpeed, 0, 0);
+    }else if(x < 0 && y > 0){
+       Serial.print("check 2 ");
+      move(0, 50, -alpha, tempSpeed, 0, 0);
+    }else if(x > 0 && y < 0){
+       Serial.print("check 3 ");
+      move(0, 50, 1800 - alpha, tempSpeed, 0, 0);
+    } else if(x < 0 && y < 0){
+      Serial.print("check 4 ");
+      move(0, 50, alpha - 1800, tempSpeed, 0, 0);
+    } else if(x == 0 && y > 0){
+       Serial.print("check 5 ");
+      move(0, 50, 0, tempSpeed, 0, 0);
+    } else if(x == 0 && y < 0){
+       Serial.print("check 6 ");
+      move(0, 50, 1800, tempSpeed, 0, 0);
+    }
+  }else {
+    if(x > 0){
+      Serial.print("check 7 ");
+       move(0, 50, 900, tempSpeed, 0, 0);
+    }else if(x < 0){
+      Serial.print("check 8 ");
+      move(0, 50, -900, tempSpeed, 0, 0);
+    }else {
+      Serial.print("check 9 ");
+      stop();
+    }
+  }
+  }
+}
+
+
+// void run(int needX, int needY, String request){
+//   signed long x;
+//   signed long y;
+//   if(request == "right"){
+//     x = readRightSick() - needX;
+//     y = readHeadSick() - needY;
+//   }else if(request == "left"){
+//     x = readLeftSick() - needX;
+//     y = readHeadSick() - needY;
+//   }
+//   float nowDistance = sqrt(abs(x*x) + abs(y*y));
+//   if(enableConfigPosition){
+//     firstSpeedForPosition = getFirstSpeed(nowDistance);
+//     expectedSpeedForPosition = getMaxSpeed(nowDistance);
+//     // Serial.print(firstSpeedForPosition);
+//     // Serial.print(" ");
+//     // Serial.println(expectedSpeedForPosition);
+//     initialDistance = nowDistance;
+//     timeSoft = 0;
+//     enableConfigPosition = false;
+//   }
+//   Serial.print(firstSpeedForPosition);
+//   Serial.print(" ");
+//   Serial.print(expectedSpeedForPosition);
+//   Serial.print(" ");
+//   if(nowDistance >= initialDistance*8/10){
+//     speed = map(abs(initialDistance - nowDistance), 0, initialDistance*2/10, firstSpeedForPosition, expectedSpeedForPosition);
+//   }else if(nowDistance < initialDistance*1/3){
+//     speed = expectedSpeedForPosition + 5 - map(abs(initialDistance*1/3 - nowDistance), 0, initialDistance*1/3, 19, expectedSpeedForPosition);
+//   }else if(nowDistance >= initialDistance*1/3 && nowDistance < initialDistance*8/10){
+//     speed = expectedSpeedForPosition;
+//   }
+//     speed = constrain(speed, 0, expectedSpeedForPosition);
 //   int tempSpeed = speed;
 //   Serial.println(tempSpeed);
 //   if(y != 0){
@@ -117,161 +336,6 @@ float getFirstSpeed(float initialDistanceSet){
 //     }
 //   }
 // }
-
-
-void run(int needX, int needY, int direction, int change, String request){
-  signed long x;
-  signed long y;
-  if(request == "right"){
-    x = readRightSick() - needX;
-    y = readHeadSick() - needY;
-  }else if(request == "left"){
-    x = readLeftSick() - needX;
-    y = readHeadSick() - needY;
-  }
-  float nowDistance = sqrt(abs(x*x) + abs(y*y));
-  Serial.println(nowDistance);
-  if(enableConfigPosition){
-    firstSpeedForPosition = getFirstSpeed(nowDistance);
-    expectedSpeedForPosition = getMaxSpeed(nowDistance);
-    // Serial.print(firstSpeedForPosition);
-    // Serial.print(" ");
-    // Serial.println(expectedSpeedForPosition);
-    initialDistance = nowDistance;
-    timeSoft = 0;
-    enableConfigPosition = false;
-  }
-  /*Serial.print(firstSpeedForPosition);
-  Serial.print(" ");
-  Serial.print(expectedSpeedForPosition);
-  Serial.print(" ");*/
-  if(nowDistance >= initialDistance*8/10){
-    speed = map(abs(initialDistance - nowDistance), 0, initialDistance*2/10, firstSpeedForPosition, expectedSpeedForPosition);
-  }else if(nowDistance < initialDistance*1/3){
-    speed = expectedSpeedForPosition + 5 - map(abs(initialDistance*1/3 - nowDistance), 0, initialDistance*1/3, 19, expectedSpeedForPosition);
-  }else if(nowDistance >= initialDistance*1/3 && nowDistance < initialDistance*8/10){
-    speed = expectedSpeedForPosition;
-  }
-    speed = constrain(speed, 0, expectedSpeedForPosition);
-  int tempSpeed = speed;
-  //Serial.println(tempSpeed);
-  if(y != 0){
-    float oket = (float)abs(x)/(float)abs(y);
-    float alpha = (float)atan(oket)*1800/PI;
-    //Serial.println(alpha);
-    if(x < 10 && x > -10 && y > -10 && y < 10){
-      stop();
-      Serial.print("check 0 ");
-      enableGoFarm = true;
-    }else if(x > 0 && y > 0){
-       Serial.print("check 1 ");
-      move(direction, 50, 900 - alpha + change, tempSpeed, 0, 0);
-    }else if(x < 0 && y > 0){
-       Serial.print("check 2 ");
-      move(direction, 50, 900 + alpha + change, tempSpeed, 0, 0);
-    }else if(x > 0 && y < 0){
-       Serial.print("check 3 ");
-      move(direction, 50, 2700 + alpha + change, tempSpeed, 0, 0);
-    } else if(x < 0 && y < 0){
-      Serial.print("check 4 ");
-      move(direction, 50, alpha + 1800 + change, tempSpeed, 0, 0);
-    } else if(x == 0 && y > 0){
-       Serial.print("check 5 ");
-      move(direction, 50, 900 + change, tempSpeed, 0, 0);
-    } else if(x == 0 && y < 0){
-       Serial.print("check 6 ");
-      move(direction, 50, 2700 + change, tempSpeed, 0, 0);
-    }
-  }else {
-    if(x > 0){
-      Serial.print("check 7 ");
-       move(direction, 50,  + change, tempSpeed, 0, 0);
-    }else if(x < 0){
-      Serial.print("check 8 ");
-      move(direction, 50, 1800  + change, tempSpeed, 0, 0);
-    }else {
-      Serial.print("check 9 ");
-      stop();
-    }
-  }
-}
-
-
-void run(int needX, int needY, String request){
-  signed long x;
-  signed long y;
-  if(request == "right"){
-    x = readRightSick() - needX;
-    y = readHeadSick() - needY;
-  }else if(request == "left"){
-    x = readLeftSick() - needX;
-    y = readHeadSick() - needY;
-  }
-  float nowDistance = sqrt(abs(x*x) + abs(y*y));
-  if(enableConfigPosition){
-    firstSpeedForPosition = getFirstSpeed(nowDistance);
-    expectedSpeedForPosition = getMaxSpeed(nowDistance);
-    // Serial.print(firstSpeedForPosition);
-    // Serial.print(" ");
-    // Serial.println(expectedSpeedForPosition);
-    initialDistance = nowDistance;
-    timeSoft = 0;
-    enableConfigPosition = false;
-  }
-  Serial.print(firstSpeedForPosition);
-  Serial.print(" ");
-  Serial.print(expectedSpeedForPosition);
-  Serial.print(" ");
-  if(nowDistance >= initialDistance*8/10){
-    speed = map(abs(initialDistance - nowDistance), 0, initialDistance*2/10, firstSpeedForPosition, expectedSpeedForPosition);
-  }else if(nowDistance < initialDistance*1/3){
-    speed = expectedSpeedForPosition + 5 - map(abs(initialDistance*1/3 - nowDistance), 0, initialDistance*1/3, 19, expectedSpeedForPosition);
-  }else if(nowDistance >= initialDistance*1/3 && nowDistance < initialDistance*8/10){
-    speed = expectedSpeedForPosition;
-  }
-    speed = constrain(speed, 0, expectedSpeedForPosition);
-  int tempSpeed = speed;
-  Serial.println(tempSpeed);
-  if(y != 0){
-    float oket = (float)abs(x)/(float)abs(y);
-    float alpha = (float)atan(oket)*1800/PI;
-    //Serial.println(alpha);
-    if(x < 10 && x > -10 && y > -10 && y < 10){
-      stop();
-      Serial.print("check 0 ");
-      enableGoFarm = true;
-    }else if(x > 0 && y > 0){
-       Serial.print("check 1 ");
-      move(0, 50, 1800 + alpha, tempSpeed, 0, 0);
-    }else if(x < 0 && y > 0){
-       Serial.print("check 2 ");
-      move(0, 50, 1800 - alpha, tempSpeed, 0, 0);
-    }else if(x > 0 && y < 0){
-       Serial.print("check 3 ");
-      move(0, 50, 3600 - alpha, tempSpeed, 0, 0);
-    } else if(x < 0 && y < 0){
-      Serial.print("check 4 ");
-      move(0, 50, alpha, tempSpeed, 0, 0);
-    } else if(x == 0 && y > 0){
-       Serial.print("check 5 ");
-      move(0, 50, 1800, tempSpeed, 0, 0);
-    } else if(x == 0 && y < 0){
-       Serial.print("check 6 ");
-      move(0, 50, 0, tempSpeed, 0, 0);
-    }
-  }else {
-    if(x > 0){
-      Serial.print("check 7 ");
-       move(0, 50, 2700, tempSpeed, 0, 0);
-    }else if(x < 0){
-      Serial.print("check 8 ");
-      move(0, 50, 900, tempSpeed, 0, 0);
-    }else {
-      Serial.print("check 9 ");
-      stop();
-    }
-  }
-}
 
 
 
